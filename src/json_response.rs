@@ -95,6 +95,7 @@ where
             old.description = D::description().into();
             responses.insert(new_code, old);
         }
+        responses.sort_keys();
         responses
     }
 }

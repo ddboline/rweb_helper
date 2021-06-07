@@ -1,5 +1,8 @@
 use proc_macro::TokenStream;
-use syn::{DeriveInput, Meta, NestedMeta, Lit, Data, Fields, Type, TypePath};
+use syn::{
+    DeriveInput, Meta, NestedMeta, Lit, Data, Fields, Type, TypePath, PathArguments, Token,
+    spanned::Spanned
+};
 use quote::quote;
 
 #[proc_macro_derive(RwebResponse, attributes(response))]
@@ -48,6 +51,12 @@ pub fn derive_rweb_response_fn(input: TokenStream) -> TokenStream {
         }
     }
     let inner_type = inner_type.expect("No inner type");
+    let mut inner_type_mod = inner_type.clone();
+    if let Some(first) = inner_type_mod.path.segments.first_mut() {
+        if let PathArguments::AngleBracketed(args) = &mut first.arguments {
+            args.colon2_token = Some(Token![::](args.span()));
+        }
+    }
     let from_impl = quote! {
         impl From<#inner_type> for #ident {
             fn from(item: #inner_type) -> Self {
@@ -96,7 +105,7 @@ pub fn derive_rweb_response_fn(input: TokenStream) -> TokenStream {
     let entity_impl = quote! {
         impl rweb::openapi::Entity for #ident {
             fn describe() -> rweb::openapi::Schema {
-                #inner_type::describe()
+                #inner_type_mod::describe()
             }
         }
     };
@@ -140,7 +149,7 @@ pub fn derive_rweb_response_fn(input: TokenStream) -> TokenStream {
     let response_entity_impl = quote! {
         impl rweb::openapi::ResponseEntity for #ident {
             fn describe_responses() -> rweb::openapi::Responses {
-                let mut resp = #inner_type::describe_responses();
+                let mut resp = #inner_type_mod::describe_responses();
                 #content_response_entity
                 #description_response_entity
                 #status_response_entity

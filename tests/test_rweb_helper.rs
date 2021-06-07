@@ -2,9 +2,8 @@ use serde::Serialize;
 use std::convert::Infallible;
 
 use rweb::{get, Filter, Rejection, Schema};
-use rweb_helper_macro::RwebResponse;
 
-use rweb_helper::{html_response::HtmlResponse, json_response::JsonResponse};
+use rweb_helper::{html_response::HtmlResponse, json_response::JsonResponse, RwebResponse};
 
 #[test]
 fn it_works() {

@@ -1,10 +1,10 @@
 use rweb::{
-    http::header::{SET_COOKIE},
+    http::header::SET_COOKIE,
     hyper::{Body, Response},
     openapi::{self, Entity, ResponseEntity, Responses},
     Reply,
 };
-use std::{marker::PhantomData};
+use std::marker::PhantomData;
 
 pub struct HtmlResponse<T, E>
 where

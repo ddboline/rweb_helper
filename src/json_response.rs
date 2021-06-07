@@ -5,7 +5,7 @@ use rweb::{
     Json, Reply,
 };
 use serde::Serialize;
-use std::{marker::PhantomData};
+use std::marker::PhantomData;
 
 pub struct JsonResponse<T, E>
 where

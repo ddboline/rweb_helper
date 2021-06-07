@@ -56,19 +56,19 @@ pub fn derive_rweb_response_fn(input: TokenStream) -> TokenStream {
         }
     };
     let content = match rweb_response.content.as_ref().map(String::as_str) {
-        Some("html") => Some(quote!{rweb_base::content_type_trait::ContentTypeHtml}),
-        Some("css") => Some(quote!{rweb_base::content_type_trait::ContentTypeCss}),
-        Some("js") => Some(quote!{rweb_base::content_type_trait::ContentTypeJs}),
+        Some("html") => Some(quote!{rweb_helper::content_type_trait::ContentTypeHtml}),
+        Some("css") => Some(quote!{rweb_helper::content_type_trait::ContentTypeCss}),
+        Some("js") => Some(quote!{rweb_helper::content_type_trait::ContentTypeJs}),
         _ => None,
     };
     let status = match rweb_response.status.as_ref().map(String::as_str) {
-        Some("OK") | Some("200") => Some(quote!{rweb_base::status_code_trait::StatusCodeOk}),
-        Some("CREATED") | Some("201") => Some(quote!{rweb_base::status_code_trait::StatusCodeCreated}),
+        Some("OK") | Some("200") => Some(quote!{rweb_helper::status_code_trait::StatusCodeOk}),
+        Some("CREATED") | Some("201") => Some(quote!{rweb_helper::status_code_trait::StatusCodeCreated}),
         _ => None,
     };
     let content_reply = if let Some(content) = &content {
         quote!{
-            use rweb_base::content_type_trait::ContentTypeTrait;    
+            use rweb_helper::content_type_trait::ContentTypeTrait;    
             res.headers_mut().insert(
                 rweb::http::header::CONTENT_TYPE ,
                 rweb::http::HeaderValue::from_static( #content::content_type_header() ) 
@@ -77,7 +77,7 @@ pub fn derive_rweb_response_fn(input: TokenStream) -> TokenStream {
     } else {quote!{}};
     let status_reply = if let Some(status) = &status {
         quote!{
-            use rweb_base::status_code_trait::StatusCodeTrait;
+            use rweb_helper::status_code_trait::StatusCodeTrait;
             *res.status_mut() = #status::status_code();
         }
     } else {
@@ -104,7 +104,7 @@ pub fn derive_rweb_response_fn(input: TokenStream) -> TokenStream {
         quote!{
             let old_code: std::borrow::Cow<'static, str> = "200".into();
             if let Some(mut old) = resp.get_mut(&old_code) {
-                use rweb_base::content_type_trait::ContentTypeTrait;    
+                use rweb_helper::content_type_trait::ContentTypeTrait;    
                 let old_content_type: std::borrow::Cow<'static, str> = "text/plain".into();
                 let new_content_type: std::borrow::Cow<'static, str> = #content::content_type().into();
                 if let Some(old_content) = old.content.remove(&old_content_type) {
@@ -127,7 +127,7 @@ pub fn derive_rweb_response_fn(input: TokenStream) -> TokenStream {
     };
     let status_response_entity = if let Some(status) = &status {
         quote!{
-            use rweb_base::status_code_trait::StatusCodeTrait;
+            use rweb_helper::status_code_trait::StatusCodeTrait;
             let old_code: std::borrow::Cow<'static, str> = "200".into();
             let new_code: std::borrow::Cow<'static, str> = #status::status_code().as_u16().to_string().into();
             if let Some(old) = resp.remove(&old_code) {

@@ -33,12 +33,11 @@ fn it_works() {
         Ok(JsonResponse::new(test).into())
     }
 
-    let (spec, test_path) = rweb::openapi::spec().build(|| test_get().or(test_json()));
+    let (spec, _) = rweb::openapi::spec().build(|| test_get().or(test_json()));
 
-    println!(
-        "{}",
-        serde_json::to_string(&spec).expect("Failed to deserialize")
-    );
+    let expected = r#"{"openapi":"3.0.1","info":{"title":"","version":""},"paths":{"/":{"get":{"responses":{"200":{"description":"0","content":{"text/html":{"schema":{"type":"string"}}}}}}},"/test_json":{"get":{"responses":{"201":{"description":"json test","content":{"application/json":{"schema":{"properties":{"field":{"type":"string"}},"type":"object","required":["field"]}}}}}}}}}"#;
+    let observed = serde_json::to_string(&spec).expect("Failed to deserialize");
+    println!("{}", observed);
 
-    assert!(false);
+    assert_eq!(expected, observed);
 }

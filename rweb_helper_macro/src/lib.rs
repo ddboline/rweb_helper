@@ -33,7 +33,7 @@ pub fn derive_rweb_response_fn(input: TokenStream) -> TokenStream {
                             "content" => rweb_response.content = lit,
                             "status" => rweb_response.status = lit,
                             "error" => rweb_response.error = lit,
-                            _ => (),
+                            id => panic!("{} is not a valid key", id),
                         }
                     }
                 }
@@ -68,7 +68,8 @@ pub fn derive_rweb_response_fn(input: TokenStream) -> TokenStream {
         Some("html") => Some(quote!{rweb_helper::content_type_trait::ContentTypeHtml}),
         Some("css") => Some(quote!{rweb_helper::content_type_trait::ContentTypeCss}),
         Some("js") => Some(quote!{rweb_helper::content_type_trait::ContentTypeJs}),
-        _ => None,
+        Some(val) => panic!("{} is not a valid content type", val),
+        None => None,
     };
     let status = match rweb_response.status.as_ref().map(String::as_str) {
         Some("OK") | Some("200") => Some(quote!{rweb_helper::status_code_trait::StatusCodeOk}),

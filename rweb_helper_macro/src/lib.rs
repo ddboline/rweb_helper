@@ -105,8 +105,11 @@ pub fn derive_rweb_response_fn(input: TokenStream) -> TokenStream {
     };
     let entity_impl = quote! {
         impl rweb::openapi::Entity for #ident {
-            fn describe() -> rweb::openapi::Schema {
-                #inner_type_mod::describe()
+            fn type_name() -> std::borrow::Cow<'static, str> {
+                #inner_type_mod::type_name()
+            }
+            fn describe(comp_d: &mut rweb::openapi::ComponentDescriptor) -> rweb::openapi::ComponentOrInlineSchema {
+                #inner_type_mod::describe(comp_d)
             }
         }
     };
@@ -114,7 +117,7 @@ pub fn derive_rweb_response_fn(input: TokenStream) -> TokenStream {
         quote!{
             let old_code: std::borrow::Cow<'static, str> = "200".into();
             if let Some(mut old) = resp.get_mut(&old_code) {
-                use rweb_helper::content_type_trait::ContentTypeTrait;    
+                use rweb_helper::content_type_trait::ContentTypeTrait;
                 let old_content_type: std::borrow::Cow<'static, str> = "text/plain".into();
                 let new_content_type: std::borrow::Cow<'static, str> = #content::content_type().into();
                 if let Some(old_content) = old.content.remove(&old_content_type) {
@@ -149,8 +152,8 @@ pub fn derive_rweb_response_fn(input: TokenStream) -> TokenStream {
     };
     let response_entity_impl = quote! {
         impl rweb::openapi::ResponseEntity for #ident {
-            fn describe_responses() -> rweb::openapi::Responses {
-                let mut resp = #inner_type_mod::describe_responses();
+            fn describe_responses(comp_d: &mut rweb::openapi::ComponentDescriptor) -> rweb::openapi::Responses {
+                let mut resp = #inner_type_mod::describe_responses(comp_d);
                 #content_response_entity
                 #description_response_entity
                 #status_response_entity

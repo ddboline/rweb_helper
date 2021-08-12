@@ -1,10 +1,10 @@
 use rweb::{
     http::header::SET_COOKIE,
     hyper::{Body, Response},
-    openapi::{self, Entity, ResponseEntity, Responses},
+    openapi::{ComponentDescriptor, ComponentOrInlineSchema, Entity, ResponseEntity, Responses},
     Reply,
 };
-use std::marker::PhantomData;
+use std::{borrow::Cow, marker::PhantomData};
 
 pub struct HtmlResponse<T, E>
 where
@@ -60,8 +60,11 @@ where
     Body: From<T>,
     E: ResponseEntity + Send,
 {
-    fn describe() -> openapi::Schema {
-        Result::<T, E>::describe()
+    fn type_name() -> Cow<'static, str> {
+        Result::<T, E>::type_name()
+    }
+    fn describe(comp_d: &mut ComponentDescriptor) -> ComponentOrInlineSchema {
+        Result::<T, E>::describe(comp_d)
     }
 }
 
@@ -71,7 +74,7 @@ where
     Body: From<T>,
     E: ResponseEntity + Send,
 {
-    fn describe_responses() -> Responses {
-        Result::<T, E>::describe_responses()
+    fn describe_responses(comp_d: &mut ComponentDescriptor) -> Responses {
+        Result::<T, E>::describe_responses(comp_d)
     }
 }

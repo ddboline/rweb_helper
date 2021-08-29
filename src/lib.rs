@@ -11,6 +11,7 @@ macro_rules! derive_rweb_schema {
     ($T0:ty, $T1:ty) => {
         impl rweb::openapi::Entity for $T0 {
             fn type_name() -> std::borrow::Cow<'static, str> {
+                assert_eq!(std::mem::size_of::<$T0>(), std::mem::size_of::<$T1>());
                 <$T1>::type_name()
             }
             fn describe(c: &mut rweb::openapi::ComponentDescriptor) -> rweb::openapi::ComponentOrInlineSchema {

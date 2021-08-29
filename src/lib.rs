@@ -24,11 +24,6 @@ macro_rules! derive_rweb_schema {
 #[macro_export]
 macro_rules! derive_rweb_test {
     ($T0:ty, $T1:ty) => {
-        paste::paste! {
-            #[test]
-            fn [<test_ $T0 $T1>]() {
-                assert_eq!(std::mem::size_of::<$T0>(), std::mem::size_of::<$T1>());
-            }
-        }
+        assert_eq!(std::mem::size_of::<$T0>(), std::mem::size_of::<$T1>());
     };
 }

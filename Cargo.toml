@@ -11,7 +11,6 @@ indexmap = "1.6"
 rweb = {version="0.13", features=["openapi"]}
 serde = { version="1.0", features=["derive"] }
 rweb_helper_macro = {path = "./rweb_helper_macro"}
-paste = "1.0"
 
 [dev-dependencies]
 serde_json = "1.0"

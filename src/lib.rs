@@ -14,11 +14,13 @@ macro_rules! derive_rweb_schema {
                 assert_eq!(std::mem::size_of::<$T0>(), std::mem::size_of::<$T1>());
                 <$T1>::type_name()
             }
-            fn describe(c: &mut rweb::openapi::ComponentDescriptor) -> rweb::openapi::ComponentOrInlineSchema {
+            fn describe(
+                c: &mut rweb::openapi::ComponentDescriptor,
+            ) -> rweb::openapi::ComponentOrInlineSchema {
                 <$T1>::describe(c)
             }
         }
-    }
+    };
 }
 
 #[macro_export]

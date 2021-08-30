@@ -1,0 +1,54 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "",
+    "version": ""
+  },
+  "paths": {
+    "/": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Test Description",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "a": {
+                      "description": "fieldA",
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "b": {
+                      "description": "fieldB",
+                      "type": "integer",
+                      "minimum": 0
+                    }
+                  },
+                  "type": "object",
+                  "required": [
+                    "a",
+                    "b"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "405": {
+            "description": "Method not allowed"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    }
+  },
+  "components": {}
+}

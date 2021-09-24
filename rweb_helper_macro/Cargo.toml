@@ -1,6 +1,6 @@
 [package]
 name = "rweb_helper_macro"
-version = "0.3.1"
+version = "0.3.3"
 authors = ["Daniel Boline <ddboline@gmail.com>"]
 edition = "2018"
 
@@ -9,7 +9,7 @@ edition = "2018"
 [dependencies]
 syn = {version="1.0", features=["full", "printing", "extra-traits", "parsing"]}
 quote = "1.0"
-rweb-macros = "0.12"
+rweb-macros = "0.13"
 
 [lib]
 proc-macro = true

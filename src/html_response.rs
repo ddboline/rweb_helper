@@ -1,10 +1,5 @@
-use rweb::{
-    http::header::SET_COOKIE,
-    hyper::{Body, Response},
-    openapi::{ComponentDescriptor, ComponentOrInlineSchema, Entity, ResponseEntity, Responses},
-    Reply,
-};
-use std::{borrow::Cow, marker::PhantomData};
+use rweb::{Reply, http::{HeaderValue, header::SET_COOKIE}, hyper::{Body, Response}, openapi::{ComponentDescriptor, ComponentOrInlineSchema, Entity, ResponseEntity, Responses}};
+use std::{borrow::Cow, convert::TryFrom, marker::PhantomData};
 
 pub struct HtmlResponse<T, E>
 where
@@ -13,7 +8,7 @@ where
     E: ResponseEntity + Send,
 {
     data: T,
-    cookie: Option<String>,
+    cookies: Option<Vec<String>>,
     phantom_e: PhantomData<E>,
 }
 
@@ -26,12 +21,16 @@ where
     pub fn new(data: T) -> Self {
         Self {
             data,
-            cookie: None,
+            cookies: None,
             phantom_e: PhantomData,
         }
     }
     pub fn with_cookie(mut self, cookie: &str) -> Self {
-        self.cookie = Some(cookie.into());
+        if let Some(cookies) = self.cookies.as_mut() {
+            cookies.push(cookie.into());
+        } else {
+            self.cookies = Some(vec![cookie.into()]);
+        }
         self
     }
 }
@@ -44,13 +43,15 @@ where
 {
     fn into_response(self) -> Response<Body> {
         let reply = rweb::reply::html(self.data);
-        #[allow(clippy::option_if_let_else)]
-        if let Some(header) = self.cookie {
-            let reply = rweb::reply::with_header(reply, SET_COOKIE, header);
-            reply.into_response()
-        } else {
-            reply.into_response()
+        let mut res = reply.into_response();
+        if let Some(cookies) = self.cookies {
+            for cookie in cookies {
+                if let Ok(value) = <HeaderValue as TryFrom<String>>::try_from(cookie) {
+                    res.headers_mut().append(SET_COOKIE, value);
+                }
+            }
         }
+        res
     }
 }
 

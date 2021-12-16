@@ -1,6 +1,6 @@
 [package]
-name = "rweb_helper"
-version = "0.4.1"
+name = "rweb-helper"
+version = "0.4.2"
 authors = ["Daniel Boline <ddboline@gmail.com>"]
 edition = "2018"
 
@@ -10,7 +10,7 @@ edition = "2018"
 indexmap = "1.6"
 rweb = {version="0.15", features=["openapi"]}
 serde = { version="1.0", features=["derive"] }
-rweb_helper_macro = {path = "./rweb_helper_macro"}
+rweb-helper-macro = {path = "./rweb_helper_macro"}
 
 [dev-dependencies]
 serde_json = "1.0"

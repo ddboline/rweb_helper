@@ -1,6 +1,6 @@
 [package]
-name = "rweb_helper_macro"
-version = "0.3.5"
+name = "rweb-helper-macro"
+version = "0.3.6"
 authors = ["Daniel Boline <ddboline@gmail.com>"]
 edition = "2018"
 

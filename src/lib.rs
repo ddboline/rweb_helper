@@ -29,3 +29,39 @@ macro_rules! derive_rweb_test {
         assert_eq!(std::mem::size_of::<$T0>(), std::mem::size_of::<$T1>());
     };
 }
+
+use rweb::openapi::{Entity, ComponentDescriptor, ComponentOrInlineSchema, Schema, Type};
+use std::borrow::Cow;
+use time::{OffsetDateTime, Date};
+
+pub struct DateTimeType(OffsetDateTime);
+
+impl Entity for DateTimeType {
+    fn type_name() -> Cow<'static, str> {
+        Cow::Borrowed("date-time")
+    }
+
+    fn describe(_: &mut ComponentDescriptor) -> ComponentOrInlineSchema {
+        ComponentOrInlineSchema::Inline(Schema {
+            schema_type: Some(Type::String),
+            format: Self::type_name(),
+            ..Default::default()
+        })
+    }
+}
+
+pub struct DateType(Date);
+
+impl Entity for DateType {
+    fn type_name() -> Cow<'static, str> {
+        Cow::Borrowed("date")
+    }
+
+    fn describe(_: &mut ComponentDescriptor) -> ComponentOrInlineSchema {
+        ComponentOrInlineSchema::Inline(Schema {
+            schema_type: Some(Type::String),
+            format: Self::type_name(),
+            ..Default::default()
+        })
+    }
+}

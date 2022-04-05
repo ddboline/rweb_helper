@@ -36,7 +36,7 @@ use std::borrow::Cow;
 use time::{OffsetDateTime, Date};
 use derive_more::{Into, From, Deref};
 
-#[derive(Into, From, Serialize, Deserialize, Deref)]
+#[derive(Into, From, Serialize, Deserialize, Deref, Clone, Copy)]
 pub struct DateTimeType(OffsetDateTime);
 
 impl Entity for DateTimeType {
@@ -53,7 +53,7 @@ impl Entity for DateTimeType {
     }
 }
 
-#[derive(Into, From, Serialize, Deserialize, Deref)]
+#[derive(Into, From, Serialize, Deserialize, Deref, Clone, Copy)]
 pub struct DateType(Date);
 
 impl Entity for DateType {

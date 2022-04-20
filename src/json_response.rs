@@ -24,6 +24,8 @@ where
             phantom_e: PhantomData,
         }
     }
+
+    #[must_use]
     pub fn with_cookie(mut self, cookie: impl Into<String>) -> Self {
         if let Some(cookies) = self.cookies.as_mut() {
             cookies.push(cookie.into());

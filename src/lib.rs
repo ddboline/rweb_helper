@@ -48,7 +48,7 @@ impl Entity for DateTimeType {
         ComponentOrInlineSchema::Inline(Schema {
             schema_type: Some(Type::String),
             format: Self::type_name(),
-            ..Default::default()
+            ..Schema::default()
         })
     }
 }
@@ -65,7 +65,7 @@ impl Entity for DateType {
         ComponentOrInlineSchema::Inline(Schema {
             schema_type: Some(Type::String),
             format: Self::type_name(),
-            ..Default::default()
+            ..Schema::default()
         })
     }
 }

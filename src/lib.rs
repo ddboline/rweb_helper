@@ -34,7 +34,7 @@ use rweb::openapi::{Entity, ComponentDescriptor, ComponentOrInlineSchema, Schema
 use serde::{Serialize, Deserialize};
 use std::borrow::Cow;
 use time::{OffsetDateTime, Date};
-use derive_more::{Into, From, Deref};
+use derive_more::{Into, From, Deref, FromStr};
 use uuid::Uuid;
 
 #[derive(Into, From, Serialize, Deserialize, Deref, Clone, Copy, Debug, PartialEq, Eq, Hash)]
@@ -71,7 +71,7 @@ impl Entity for DateType {
     }
 }
 
-#[derive(Into, From, Serialize, Deserialize, Deref, Clone, Copy, Debug, Hash, PartialEq, Eq)]
+#[derive(Into, From, Serialize, Deserialize, Deref, Clone, Copy, Debug, Hash, PartialEq, Eq, FromStr)]
 pub struct UuidWrapper(Uuid);
 
 impl Entity for UuidWrapper {

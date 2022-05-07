@@ -35,6 +35,7 @@ use serde::{Serialize, Deserialize};
 use std::borrow::Cow;
 use time::{OffsetDateTime, Date};
 use derive_more::{Into, From, Deref};
+use uuid::Uuid;
 
 #[derive(Into, From, Serialize, Deserialize, Deref, Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub struct DateTimeType(OffsetDateTime);
@@ -66,6 +67,23 @@ impl Entity for DateType {
             schema_type: Some(Type::String),
             format: Self::type_name(),
             ..Schema::default()
+        })
+    }
+}
+
+#[derive(Into, From, Serialize, Deserialize, Deref, Clone, Copy, Debug, Hash, PartialEq, Eq)]
+pub struct UuidWrapper(Uuid);
+
+impl Entity for UuidWrapper {
+    fn type_name() -> Cow<'static, str> {
+        Cow::Borrowed("uuid")
+    }
+
+    fn describe(_: &mut ComponentDescriptor) -> ComponentOrInlineSchema {
+        ComponentOrInlineSchema::Inline(Schema {
+            schema_type: Some(Type::String),
+            format: Self::type_name(),
+            ..Default::default()
         })
     }
 }

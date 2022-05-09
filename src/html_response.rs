@@ -1,4 +1,9 @@
-use rweb::{Reply, http::{HeaderValue, header::SET_COOKIE}, hyper::{Body, Response}, openapi::{ComponentDescriptor, ComponentOrInlineSchema, Entity, ResponseEntity, Responses}};
+use rweb::{
+    http::{header::SET_COOKIE, HeaderValue},
+    hyper::{Body, Response},
+    openapi::{ComponentDescriptor, ComponentOrInlineSchema, Entity, ResponseEntity, Responses},
+    Reply,
+};
 use std::{borrow::Cow, convert::TryFrom, marker::PhantomData};
 
 pub struct HtmlResponse<T, E>

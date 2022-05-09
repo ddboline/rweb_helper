@@ -1,7 +1,12 @@
-use rweb::{Json, Reply, http::{HeaderValue, header::SET_COOKIE}, hyper::{Body, Response}, openapi::{ComponentDescriptor, ComponentOrInlineSchema, Entity, ResponseEntity, Responses}};
+use rweb::{
+    http::{header::SET_COOKIE, HeaderValue},
+    hyper::{Body, Response},
+    openapi::{ComponentDescriptor, ComponentOrInlineSchema, Entity, ResponseEntity, Responses},
+    Json, Reply,
+};
 use serde::Serialize;
-use std::marker::PhantomData;
 use std::convert::TryFrom;
+use std::marker::PhantomData;
 
 pub struct JsonResponse<T, E>
 where

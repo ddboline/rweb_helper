@@ -30,11 +30,11 @@ macro_rules! derive_rweb_test {
     };
 }
 
-use rweb::openapi::{Entity, ComponentDescriptor, ComponentOrInlineSchema, Schema, Type};
-use serde::{Serialize, Deserialize};
+use derive_more::{Deref, Display, From, FromStr, Into};
+use rweb::openapi::{ComponentDescriptor, ComponentOrInlineSchema, Entity, Schema, Type};
+use serde::{Deserialize, Serialize};
 use std::borrow::Cow;
-use time::{OffsetDateTime, Date};
-use derive_more::{Into, From, Deref, FromStr};
+use time::{Date, OffsetDateTime};
 use uuid::Uuid;
 
 #[derive(Into, From, Serialize, Deserialize, Deref, Clone, Copy, Debug, PartialEq, Eq, Hash)]
@@ -71,7 +71,21 @@ impl Entity for DateType {
     }
 }
 
-#[derive(Into, From, Serialize, Deserialize, Deref, Clone, Copy, Debug, Hash, PartialEq, Eq, FromStr)]
+#[derive(
+    Into,
+    From,
+    Serialize,
+    Deserialize,
+    Deref,
+    Clone,
+    Copy,
+    Debug,
+    Hash,
+    PartialEq,
+    Eq,
+    FromStr,
+    Display,
+)]
 pub struct UuidWrapper(Uuid);
 
 impl Entity for UuidWrapper {
@@ -85,5 +99,17 @@ impl Entity for UuidWrapper {
             format: Self::type_name(),
             ..Default::default()
         })
+    }
+}
+
+impl PartialEq<Uuid> for UuidWrapper {
+    fn eq(&self, other: &Uuid) -> bool {
+        &self.0 == other
+    }
+}
+
+impl PartialEq<UuidWrapper> for Uuid {
+    fn eq(&self, other: &UuidWrapper) -> bool {
+        self == &other.0
     }
 }

@@ -74,7 +74,7 @@ struct Test1 {
 }
 
 #[derive(Debug)]
-struct TestError ;
+struct TestError;
 
 impl Reject for TestError {}
 

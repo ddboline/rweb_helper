@@ -130,7 +130,7 @@ impl PartialEq<UuidWrapper> for Uuid {
     FromStr,
     Display,
 )]
-struct DecimalWrapper(Decimal);
+pub struct DecimalWrapper(Decimal);
 
 impl Entity for DecimalWrapper {
     fn type_name() -> Cow<'static, str> {

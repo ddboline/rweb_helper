@@ -31,6 +31,7 @@ macro_rules! derive_rweb_test {
 }
 
 use derive_more::{Deref, Display, From, FromStr, Into};
+use rust_decimal::Decimal;
 use rweb::openapi::{ComponentDescriptor, ComponentOrInlineSchema, Entity, Schema, Type};
 use serde::{Deserialize, Serialize};
 use std::borrow::Cow;
@@ -110,6 +111,49 @@ impl PartialEq<Uuid> for UuidWrapper {
 
 impl PartialEq<UuidWrapper> for Uuid {
     fn eq(&self, other: &UuidWrapper) -> bool {
+        self == &other.0
+    }
+}
+
+#[derive(
+    Into,
+    From,
+    Serialize,
+    Deserialize,
+    Deref,
+    Clone,
+    Copy,
+    Debug,
+    Hash,
+    PartialEq,
+    Eq,
+    FromStr,
+    Display,
+)]
+struct DecimalWrapper(Decimal);
+
+impl Entity for DecimalWrapper {
+    fn type_name() -> Cow<'static, str> {
+        Cow::Borrowed("decimal")
+    }
+
+    fn describe(_: &mut ComponentDescriptor) -> ComponentOrInlineSchema {
+        ComponentOrInlineSchema::Inline(Schema {
+            schema_type: Some(Type::String),
+            format: Self::type_name(),
+            ..Default::default()
+        })
+    }
+}
+
+impl PartialEq<Decimal> for DecimalWrapper {
+    fn eq(&self, other: &Decimal) -> bool {
+        &self.0 == other
+    }
+}
+
+impl PartialEq<DecimalWrapper> for Decimal {
+    fn eq(&self, other: &DecimalWrapper) -> bool {
         self == &other.0
     }
 }

@@ -1,7 +1,7 @@
 use proc_macro::TokenStream;
 use syn::{
-    DeriveInput, Meta, NestedMeta, Lit, Data, Fields, Type, TypePath, PathArguments, Token,
-    spanned::Spanned
+    DeriveInput, Meta, Lit, Data, Fields, Type, TypePath, PathArguments, Token,
+    spanned::Spanned, Expr
 };
 use quote::quote;
 
@@ -20,23 +20,28 @@ pub fn derive_rweb_response_fn(input: TokenStream) -> TokenStream {
         attrs, ident, data, ..
     } = input;
     for attr in &attrs {
-        if attr.path.is_ident("response") {
-            if let Meta::List(metalist) = attr.parse_meta().unwrap() {
-                for meta in metalist.nested {
-                    if let NestedMeta::Meta(Meta::NameValue(meta)) = meta {
-                        let ident = meta.path.get_ident().unwrap().to_string();
-                        let lit = if let Lit::Str(lstr) = meta.lit {
-                            Some(lstr.value())
-                        } else {None};
-                        match ident.as_str() {
-                            "description" => rweb_response.description = lit,
-                            "content" => rweb_response.content = lit,
-                            "status" => rweb_response.status = lit,
-                            "error" => rweb_response.error = lit,
-                            id => panic!("{} is not a valid key", id),
+        if attr.meta.path().is_ident("response") {
+            if let Meta::List(metalist) = &attr.meta {
+                metalist.parse_nested_meta(
+                    |meta| {
+                        if let Some(ident) = meta.path.get_ident() {
+                            let ident = ident.to_string();
+                            if let Expr::Lit(lit) = meta.value()?.parse::<Expr>()? {
+                                if let Lit::Str(lit) = lit.lit {
+                                    let lit = Some(lit.value());
+                                    match ident.as_str() {
+                                        "description" => rweb_response.description = lit,
+                                        "content" => rweb_response.content = lit,
+                                        "status" => rweb_response.status = lit,
+                                        "error" => rweb_response.error = lit,
+                                        id => panic!("{} is not a valid key", id),
+                                    }
+                                }
+                            }
                         }
+                        Ok(())
                     }
-                }
+                ).map_err(|e| panic!("encountered error {}", e)).unwrap();
             }
         }
     }

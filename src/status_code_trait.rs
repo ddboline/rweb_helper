@@ -19,3 +19,11 @@ impl StatusCodeTrait for StatusCodeCreated {
         StatusCode::CREATED
     }
 }
+
+pub struct StatusCodeNoContent {}
+
+impl StatusCodeTrait for StatusCodeNoContent {
+    fn status_code() -> StatusCode {
+        StatusCode::NO_CONTENT
+    }
+}

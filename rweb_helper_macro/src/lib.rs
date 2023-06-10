@@ -79,6 +79,7 @@ pub fn derive_rweb_response_fn(input: TokenStream) -> TokenStream {
     let status = match rweb_response.status.as_ref().map(String::as_str) {
         Some("OK") | Some("200") => Some(quote!{rweb_helper::status_code_trait::StatusCodeOk}),
         Some("CREATED") | Some("201") => Some(quote!{rweb_helper::status_code_trait::StatusCodeCreated}),
+        Some("NO_CONTENT") | Some("204") => Some(quote!(rweb_helper::status_code_trait::StatusCodeNoContent)),
         _ => None,
     };
     let content_reply = if let Some(content) = &content {

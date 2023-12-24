@@ -1,5 +1,7 @@
+use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 use std::{borrow::Cow, convert::Infallible};
+use uuid::Uuid;
 
 use rweb::{
     filters::BoxedFilter,
@@ -13,7 +15,7 @@ use rweb::{
 
 use rweb_helper::{
     derive_rweb_schema, derive_rweb_test, html_response::HtmlResponse, json_response::JsonResponse,
-    RwebResponse,
+    DecimalWrapper, RwebResponse, UuidWrapper,
 };
 
 #[test]
@@ -30,6 +32,8 @@ fn basic_example() {
     #[derive(Serialize, Schema)]
     struct TestJson {
         field: String,
+        id: UuidWrapper,
+        value: DecimalWrapper,
     }
 
     #[derive(RwebResponse)]
@@ -40,13 +44,15 @@ fn basic_example() {
     async fn test_json() -> Result<TestJsonResponse, Rejection> {
         let test = TestJson {
             field: "test_field".into(),
+            id: Uuid::new_v4().into(),
+            value: Decimal::from_str_exact("1.234").unwrap().into(),
         };
         Ok(JsonResponse::new(test).into())
     }
 
     let (spec, _) = rweb::openapi::spec().build(|| test_get().or(test_json()));
 
-    let expected = r#"{"openapi":"3.0.1","info":{"title":"","version":""},"paths":{"/":{"get":{"responses":{"200":{"description":"0","content":{"text/html":{"schema":{"type":"string"}}}}}}},"/test_json":{"get":{"responses":{"201":{"description":"json test","content":{"application/json":{"schema":{"properties":{"field":{"type":"string"}},"type":"object","required":["field"]}}}}}}}},"components":{}}"#;
+    let expected = r#"{"openapi":"3.0.1","info":{"title":"","version":""},"paths":{"/":{"get":{"responses":{"200":{"description":"0","content":{"text/html":{"schema":{"type":"string"}}}}}}},"/test_json":{"get":{"responses":{"201":{"description":"json test","content":{"application/json":{"schema":{"properties":{"field":{"type":"string"},"id":{"format":"uuid","example":"334518f4-1bfd-4f20-9978-bfad0dc033e1","type":"string"},"value":{"format":"decimal","example":"1.234","type":"string"}},"type":"object","required":["field","id","value"]}}}}}}}},"components":{}}"#;
     let observed = serde_json::to_string(&spec).expect("Failed to deserialize");
     println!("{}", observed);
 

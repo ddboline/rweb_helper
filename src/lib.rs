@@ -34,9 +34,12 @@ use derive_more::{Deref, Display, From, FromStr, Into};
 use rust_decimal::Decimal;
 use rweb::openapi::{ComponentDescriptor, ComponentOrInlineSchema, Entity, Schema, Type};
 use serde::{Deserialize, Serialize};
-use std::borrow::Cow;
+use std::{borrow::Cow, str::FromStr};
 use time::{Date, OffsetDateTime};
 use uuid::Uuid;
+use once_cell::sync::Lazy;
+
+static UUID_EXAMPLE: Lazy<Uuid> = Lazy::new(|| Uuid::from_str("334518f4-1bfd-4f20-9978-bfad0dc033e1").unwrap());
 
 #[derive(Into, From, Serialize, Deserialize, Deref, Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub struct DateTimeType(OffsetDateTime);
@@ -67,6 +70,7 @@ impl Entity for DateType {
         ComponentOrInlineSchema::Inline(Schema {
             schema_type: Some(Type::String),
             format: Self::type_name(),
+            example: Some(serde_json::value::Value::String("2023-01-01".into())),
             ..Schema::default()
         })
     }
@@ -98,6 +102,7 @@ impl Entity for UuidWrapper {
         ComponentOrInlineSchema::Inline(Schema {
             schema_type: Some(Type::String),
             format: Self::type_name(),
+            example: Some(serde_json::value::Value::String(UUID_EXAMPLE.to_string())),
             ..Default::default()
         })
     }
@@ -141,6 +146,7 @@ impl Entity for DecimalWrapper {
         ComponentOrInlineSchema::Inline(Schema {
             schema_type: Some(Type::String),
             format: Self::type_name(),
+            example: Some(serde_json::value::Value::String("1.234".to_string())),
             ..Default::default()
         })
     }

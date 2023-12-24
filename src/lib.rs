@@ -31,15 +31,16 @@ macro_rules! derive_rweb_test {
 }
 
 use derive_more::{Deref, Display, From, FromStr, Into};
+use once_cell::sync::Lazy;
 use rust_decimal::Decimal;
 use rweb::openapi::{ComponentDescriptor, ComponentOrInlineSchema, Entity, Schema, Type};
 use serde::{Deserialize, Serialize};
 use std::{borrow::Cow, str::FromStr};
 use time::{Date, OffsetDateTime};
 use uuid::Uuid;
-use once_cell::sync::Lazy;
 
-static UUID_EXAMPLE: Lazy<Uuid> = Lazy::new(|| Uuid::from_str("334518f4-1bfd-4f20-9978-bfad0dc033e1").unwrap());
+static UUID_EXAMPLE: Lazy<Uuid> =
+    Lazy::new(|| Uuid::from_str("334518f4-1bfd-4f20-9978-bfad0dc033e1").unwrap());
 
 #[derive(Into, From, Serialize, Deserialize, Deref, Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub struct DateTimeType(OffsetDateTime);

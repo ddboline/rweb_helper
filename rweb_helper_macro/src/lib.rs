@@ -1,9 +1,9 @@
 use proc_macro::TokenStream;
-use syn::{
-    DeriveInput, Meta, Lit, Data, Fields, Type, TypePath, PathArguments, Token,
-    spanned::Spanned, Expr
-};
 use quote::quote;
+use syn::{
+    spanned::Spanned, Data, DeriveInput, Expr, Fields, Lit, Meta, PathArguments, Token, Type,
+    TypePath,
+};
 
 #[proc_macro_derive(RwebResponse, attributes(response))]
 pub fn derive_rweb_response_fn(input: TokenStream) -> TokenStream {
@@ -22,8 +22,8 @@ pub fn derive_rweb_response_fn(input: TokenStream) -> TokenStream {
     for attr in &attrs {
         if attr.meta.path().is_ident("response") {
             if let Meta::List(metalist) = &attr.meta {
-                metalist.parse_nested_meta(
-                    |meta| {
+                metalist
+                    .parse_nested_meta(|meta| {
                         if let Some(ident) = meta.path.get_ident() {
                             let ident = ident.to_string();
                             if let Expr::Lit(lit) = meta.value()?.parse::<Expr>()? {
@@ -40,8 +40,9 @@ pub fn derive_rweb_response_fn(input: TokenStream) -> TokenStream {
                             }
                         }
                         Ok(())
-                    }
-                ).map_err(|e| panic!("encountered error {}", e)).unwrap();
+                    })
+                    .map_err(|e| panic!("encountered error {}", e))
+                    .unwrap();
             }
         }
     }
@@ -69,35 +70,41 @@ pub fn derive_rweb_response_fn(input: TokenStream) -> TokenStream {
             }
         }
     };
-    let content = match rweb_response.content.as_ref().map(String::as_str) {
-        Some("html") => Some(quote!{rweb_helper::content_type_trait::ContentTypeHtml}),
-        Some("css") => Some(quote!{rweb_helper::content_type_trait::ContentTypeCss}),
-        Some("js") => Some(quote!{rweb_helper::content_type_trait::ContentTypeJs}),
+    let content = match rweb_response.content.as_deref() {
+        Some("html") => Some(quote! {rweb_helper::content_type_trait::ContentTypeHtml}),
+        Some("css") => Some(quote! {rweb_helper::content_type_trait::ContentTypeCss}),
+        Some("js") => Some(quote! {rweb_helper::content_type_trait::ContentTypeJs}),
         Some(val) => panic!("{} is not a valid content type", val),
         None => None,
     };
-    let status = match rweb_response.status.as_ref().map(String::as_str) {
-        Some("OK") | Some("200") => Some(quote!{rweb_helper::status_code_trait::StatusCodeOk}),
-        Some("CREATED") | Some("201") => Some(quote!{rweb_helper::status_code_trait::StatusCodeCreated}),
-        Some("NO_CONTENT") | Some("204") => Some(quote!(rweb_helper::status_code_trait::StatusCodeNoContent)),
+    let status = match rweb_response.status.as_deref() {
+        Some("OK") => Some(quote! {rweb_helper::status_code_trait::StatusCodeOk}),
+        Some("CREATED") => Some(quote! {rweb_helper::status_code_trait::StatusCodeCreated}),
+        Some("NO_CONTENT") => Some(quote!(rweb_helper::status_code_trait::StatusCodeNoContent)),
+        Some(s) => s
+            .parse::<u16>()
+            .ok()
+            .map(|c| quote!(rweb_helper::status_code_trait::StatucCodeValue::<#c>)),
         _ => None,
     };
     let content_reply = if let Some(content) = &content {
-        quote!{
-            use rweb_helper::content_type_trait::ContentTypeTrait;    
+        quote! {
+            use rweb_helper::content_type_trait::ContentTypeTrait;
             res.headers_mut().insert(
                 rweb::http::header::CONTENT_TYPE ,
-                rweb::http::HeaderValue::from_static( #content::content_type_header() ) 
+                rweb::http::HeaderValue::from_static( #content::content_type_header() )
             );
         }
-    } else {quote!{}};
+    } else {
+        quote! {}
+    };
     let status_reply = if let Some(status) = &status {
-        quote!{
+        quote! {
             use rweb_helper::status_code_trait::StatusCodeTrait;
             *res.status_mut() = #status::status_code();
         }
     } else {
-        quote!{}
+        quote! {}
     };
     let reply_impl = quote! {
         impl rweb::Reply for #ident {
@@ -120,7 +127,7 @@ pub fn derive_rweb_response_fn(input: TokenStream) -> TokenStream {
         }
     };
     let content_response_entity = if let Some(content) = &content {
-        quote!{
+        quote! {
             let old_code: std::borrow::Cow<'static, str> = "200".into();
             if let Some(mut old) = resp.get_mut(&old_code) {
                 use rweb_helper::content_type_trait::ContentTypeTrait;
@@ -132,20 +139,20 @@ pub fn derive_rweb_response_fn(input: TokenStream) -> TokenStream {
             }
         }
     } else {
-        quote!{}
+        quote! {}
     };
     let description_response_entity = if let Some(description) = &rweb_response.description {
-        quote!{
+        quote! {
             let old_code: std::borrow::Cow<'static, str> = "200".into();
             if let Some(mut old) = resp.get_mut(&old_code) {
                 old.description = #description.into();
             }
         }
     } else {
-        quote!{}
+        quote! {}
     };
     let status_response_entity = if let Some(status) = &status {
-        quote!{
+        quote! {
             use rweb_helper::status_code_trait::StatusCodeTrait;
             let old_code: std::borrow::Cow<'static, str> = "200".into();
             let new_code: std::borrow::Cow<'static, str> = #status::status_code().as_u16().to_string().into();
@@ -154,7 +161,7 @@ pub fn derive_rweb_response_fn(input: TokenStream) -> TokenStream {
             }
         }
     } else {
-        quote!{}
+        quote! {}
     };
     let response_entity_impl = quote! {
         impl rweb::openapi::ResponseEntity for #ident {
@@ -168,7 +175,7 @@ pub fn derive_rweb_response_fn(input: TokenStream) -> TokenStream {
             }
         }
     };
-    let tokens = quote!{
+    let tokens = quote! {
         #from_impl
         #reply_impl
         #entity_impl

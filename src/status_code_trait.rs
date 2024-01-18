@@ -27,3 +27,11 @@ impl StatusCodeTrait for StatusCodeNoContent {
         StatusCode::NO_CONTENT
     }
 }
+
+pub struct StatusCodeValue<const S: u16> {}
+
+impl<const S: u16> StatusCodeTrait for StatusCodeValue<S> {
+    fn status_code() -> StatusCode {
+        StatusCode::from_u16(S).unwrap_or(StatusCode::OK)
+    }
+}

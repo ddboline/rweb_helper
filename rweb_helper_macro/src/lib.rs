@@ -84,7 +84,7 @@ pub fn derive_rweb_response_fn(input: TokenStream) -> TokenStream {
         Some(s) => s
             .parse::<u16>()
             .ok()
-            .map(|c| quote!(rweb_helper::status_code_trait::StatucCodeValue::<#c>)),
+            .map(|c| quote!(rweb_helper::status_code_trait::StatusCodeValue::<#c>)),
         _ => None,
     };
     let content_reply = if let Some(content) = &content {

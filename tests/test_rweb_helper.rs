@@ -95,9 +95,8 @@ impl Entity for TestError {
 
 impl ResponseEntity for TestError {
     fn describe_responses(_: &mut ComponentDescriptor) -> Responses {
-        use indexmap::IndexMap;
         use rweb::{http::StatusCode, openapi::Response};
-        let mut map = IndexMap::new();
+        let mut map = Responses::new();
 
         let error_responses = [
             (StatusCode::NOT_FOUND, "Not Found"),
